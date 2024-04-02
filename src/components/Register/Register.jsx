@@ -1,9 +1,22 @@
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import auth from "../../firebase/firebase.config";
+
 const Register = () => {
   const handleRegister = (e) => {
     e.preventDefault();
     console.log("submit");
 
-    const email = e.target.value;
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    console.log(email,password)
+
+    createUserWithEmailAndPassword( auth, email, password )
+    .then(result =>{
+        console.log(result.user)
+    }) 
+    .catch(error=>{
+        console.log(error);
+    })
   };
 
   return (
@@ -19,13 +32,14 @@ const Register = () => {
             </p>
           </div>
           <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+
             <form onSubmit={handleRegister} className="card-body">
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Email</span>
                 </label>
                 <input
-                  type="email"
+                  type="email" name="email"
                   placeholder="email"
                   className="input input-bordered"
                   required
@@ -36,7 +50,7 @@ const Register = () => {
                   <span className="label-text">Password</span>
                 </label>
                 <input
-                  type="password"
+                  type="password" name="password"
                   placeholder="password"
                   className="input input-bordered"
                   required

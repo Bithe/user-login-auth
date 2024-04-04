@@ -81,7 +81,7 @@ const Register = () => {
                   required
                 />
                 <span>{<FaEye />}</span>
-                
+              
                 <label className="label">
                   <a href="#" className="label-text-alt link link-hover">
                     Forgot password?

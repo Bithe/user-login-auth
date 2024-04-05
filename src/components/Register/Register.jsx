@@ -1,11 +1,13 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import auth from "../../firebase/firebase.config";
 import { useState } from "react";
-import { FaEye } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Register = () => {
   const [registerError, setRegisterError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleRegister = (e) => {
     e.preventDefault();
@@ -13,21 +15,21 @@ const Register = () => {
 
     const email = e.target.email.value;
     const password = e.target.password.value;
-    console.log(email, password);
+    const accepted = e.target.terms.checked;
+    console.log(email, password, accepted);
     setRegisterError("");
     setSuccess("");
 
     if (password.length < 6) {
       setRegisterError("Password should be at least 6 characters");
       return;
-    } else if (
-      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@*()_+\-=[\]{};':"\\|,.<>/?])/.test(
-        password
-      )
-    ) {
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@*()_+\-=[\]{};':"\\|,.<>/?])/.test(password)) {
       setRegisterError(
         "Password should contain at least one lowercase letter, one uppercase letter, one digit, and one special character"
       );
+      return;
+    } else if(!accepted){
+      setRegisterError("accept terms");
       return;
     }
 
@@ -72,16 +74,24 @@ const Register = () => {
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Password</span>
-                </label>{" "}
+                </label>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="password"
                   className="input input-bordered"
                   required
                 />
-                <span>{<FaEye />}</span>
-              
+                <span onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <FaEye></FaEye> : <FaEyeSlash></FaEyeSlash>}
+                </span>
+
+                <div className="flex gap-2">
+                  {" "}
+                  <input type="checkbox" name="terms" id="terms"></input>
+                  <label>Accept our terms</label>
+                </div>
+
                 <label className="label">
                   <a href="#" className="label-text-alt link link-hover">
                     Forgot password?
@@ -102,6 +112,8 @@ const Register = () => {
                 <p className=" text-green-500 font-extrabold">{success}</p>
               </div>
             )}
+
+            <p>Already have an account? <Link to="/login">Login</Link></p>
           </div>
         </div>
       </div>

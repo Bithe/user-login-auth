@@ -1,11 +1,13 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 import auth from "../../firebase/firebase.config";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
 const Login = () => {
 
   const [loginError, setLoginError] = useState("");
   const [success, setSuccess] = useState("");
+  const emailRef = useRef(null);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -23,13 +25,44 @@ const Login = () => {
     signInWithEmailAndPassword(auth, email, password)
     .then(result =>{
       console.log(result.user);
-      setSuccess("success")
+      if(result.user.emailVerified){
+        setSuccess("success")
+
+      }
+      else{
+        alert('varify your email');
+      }
     })
     .catch(error =>{
       console.log(error);
       setLoginError("error")
     })
   };
+
+
+  const handleForgetPassw = () =>{
+
+    const email = emailRef.current.value;
+
+    if(!email){
+      console.log('give an email', emailRef.current.value);
+      return;
+    }
+
+    else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      console.log('write a valid email');
+      return;
+    }
+
+
+    sendPasswordResetEmail(auth, email)
+    .then(()=>{
+      alert('check you email');
+    })
+    .catch(error =>{
+      console.log(error)
+    })
+  }
 
   return (
     <div className="hero min-h-screen bg-base-200">
@@ -52,6 +85,7 @@ const Login = () => {
               <input
                 type="email"
                 name="email"
+                ref={emailRef}
                 placeholder="email"
                 className="input input-bordered"
                 required
@@ -69,7 +103,7 @@ const Login = () => {
                 required
               />
               <label className="label">
-                <a href="#" className="label-text-alt link link-hover">
+                <a href="#" className="label-text-alt link link-hover" onClick={handleForgetPassw}>
                   Forgot password?
                 </a>
               </label>
@@ -78,6 +112,8 @@ const Login = () => {
               <button className="btn btn-primary">Login</button>
             </div>
           </form>
+
+          <p>New User? Please  <Link to="/register" className="font-extrabold">Register</Link></p>
 
 
           {loginError && (

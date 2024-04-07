@@ -1,4 +1,8 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile,
+} from "firebase/auth";
 import auth from "../../firebase/firebase.config";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -13,6 +17,7 @@ const Register = () => {
     e.preventDefault();
     console.log("submit");
 
+    const name = e.target.name.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
     const accepted = e.target.terms.checked;
@@ -23,12 +28,16 @@ const Register = () => {
     if (password.length < 6) {
       setRegisterError("Password should be at least 6 characters");
       return;
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@*()_+\-=[\]{};':"\\|,.<>/?])/.test(password)) {
+    } else if (
+      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@*()_+\-=[\]{};':"\\|,.<>/?])/.test(
+        password
+      )
+    ) {
       setRegisterError(
         "Password should contain at least one lowercase letter, one uppercase letter, one digit, and one special character"
       );
       return;
-    } else if(!accepted){
+    } else if (!accepted) {
       setRegisterError("accept terms");
       return;
     }
@@ -37,6 +46,21 @@ const Register = () => {
       .then((result) => {
         console.log(result.user);
         setSuccess("successfully register");
+
+        updateProfile(result.user,{
+          displayName: name,
+          photoURL: "https://example.com/jane-q-user/profile.jpg",
+           })
+           .then(() =>{
+            console.log("profile updated")
+          })
+          .catch(error =>{
+            console.log(error);
+          })
+
+        sendEmailVerification(result.user).then(() => {
+          alert("check you email");
+        });
       })
       .catch((error) => {
         console.log(error);
@@ -59,6 +83,18 @@ const Register = () => {
 
           <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
             <form onSubmit={handleRegister} className="card-body">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Name</span>
+                </label>
+                <input
+                  type="name"
+                  name="name"
+                  placeholder="name"
+                  className="input input-bordered"
+                  required
+                />
+              </div>
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Email</span>
@@ -113,7 +149,9 @@ const Register = () => {
               </div>
             )}
 
-            <p>Already have an account? <Link to="/login">Login</Link></p>
+            <p>
+              Already have an account? <Link to="/login">Login</Link>
+            </p>
           </div>
         </div>
       </div>

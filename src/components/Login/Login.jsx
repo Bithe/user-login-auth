@@ -36,6 +36,8 @@ const Login = () => {
     .catch(error =>{
       console.log(error);
       setLoginError("error")
+      alert('varify your email');
+
     })
   };
 

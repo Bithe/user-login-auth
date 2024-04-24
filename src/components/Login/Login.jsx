@@ -38,6 +38,8 @@ const Login = () => {
       setLoginError("error")
       alert('varify your email');
       alert('varify your email');
+      alert('varify your email');
+
 
     })
   };

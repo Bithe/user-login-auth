@@ -37,7 +37,7 @@ const Login = () => {
       console.log(error);
       setLoginError("error")
       alert('varify your email');
-      alert('varify your email');
+
  
 
 
